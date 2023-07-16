@@ -17,78 +17,111 @@
               </div>
             </div>
             <div class="form-group video-class">
-              <input type="file" accept="video/*" ref="videoFile"  @change="handleFileChange" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" required  />
+              <input type="file" accept="video/*" ref="videoFile" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" required  />
             </div>
             <div class="form-group my-class">
               <button type="submit" class="btn btn-primary" >Upload Video and Create Subtitles</button>
             </div>
-           
           </form>
         </article>
       </div>
-      
     </div>
-  </template>
-  
-  <script>
+</template>
+<script>
     import axios from 'axios';
     export default {
-      data() {
+    data() {
         return {
+          showDisplayVideo: false,
           subtitles: [
-            // Initial subtitle object for the form
-            { startTime: '', endTime: '', text: '' }
+              { startTime: '', endTime: '', text: '' }
           ],
-          selectedFile: null,
+          file: 'subtitle.vtt',
         };
-      },
-      methods: {
-          submitForm() {
+    },
+    methods: {
+        submitForm() {
             const videoFile = this.$refs.videoFile.files[0];
-      
+
+            this.videoFileName = videoFile;
+    
             // Create a new FormData instance
             const formData = new FormData();
             formData.append('video', videoFile);
-      
+    
             // Format the subtitle data into the desired structure
             const formattedSubtitles = this.subtitles
-              .filter(subtitle => subtitle.startTime && subtitle.endTime && subtitle.text)
-              .map(subtitle => {
+            .filter(subtitle => subtitle.startTime && subtitle.endTime && subtitle.text)
+            .map(subtitle => {
                 return {
-                  start: subtitle.startTime,
-                  end: subtitle.endTime,
-                  text: subtitle.text
+                start: subtitle.startTime,
+                end: subtitle.endTime,
+                text: subtitle.text
                 };
-              });
-      
+            });
+            
             // Generate the subtitles file content
             const subtitlesContent = `WEBVTT\r\n${formattedSubtitles
-              .map(subtitle => `${subtitle.start} --> ${subtitle.end}\n${subtitle.text}`)
-              .join('')}`;
+            .map(subtitle => `${subtitle.start} --> ${subtitle.end}\n${subtitle.text}`)
+            .join('')}`;
             
             // Append the subtitles data to the FormData
-            formData.append('subtitles', new Blob([subtitlesContent], { type: 'text/vtt' }), 'subtitle.vtt');
-      
+            formData.append('subtitles', new Blob([subtitlesContent], { type: 'text/vtt' }), this.file);
+    
             // Submit the form data to the server
             axios.post('http://localhost:5001/api/upload', formData)
-              .then(response => {
+            .then(response => {
                 console.log('Upload successful');
-                  this.$router.push('/display');
-              })
-              .catch(error => {
+                this.showDisplayVideo = true;
+                this.$router.push('/display');
+            })
+            .catch(error => {
                 console.error('Upload failed:', error);
-              });
-          },
-          addSubtitle() {
-            this.subtitles.push({ startTime: '', endTime: '', text: '' });
-          },
-          removeSubtitle(index) {
-            this.subtitles.splice(index, 1);
-          },
-          handleFileChange(event) {
-            this.selectedFile = event.target.files[0];
+            });
         },
-      }
+        addSubtitle() {
+            this.subtitles.push({ startTime: '', endTime: '', text: '' });
+        },
+        removeSubtitle(index) {
+            this.subtitles.splice(index, 1);
+        },
+      },
     };
-  </script>
+</script>
+
+<style scoped>
+  button {
+      margin-top:20px;
+      margin-bottom: 30px;
+  }
+
+  .my-class{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  }
+
+  .card {
+      width:700px;
+      margin: 0 auto;
+      float: none;
+      margin-bottom: 10px;
+      border-radius: 50px;
+      background-color: turquoise;
+
+  }
+  input { 
+      margin-bottom: 20px;
+  }
+  h4{
+      text-align: center;
+  }
+  .top-30{
+      margin-top: 30px;
+      padding-top: 30px;
+  }
+  #inputGroupFile04{
+    margin-top:30px;
+  }
   
+</style>

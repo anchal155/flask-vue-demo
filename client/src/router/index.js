@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import DisplayVideo from '../components/DisplayVideo.vue';
-import submitForm from '../components/submitForm.vue';
+import Home from '../views/Home.vue';
 
 
 const router = createRouter({
@@ -8,13 +8,13 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'Submitform',
-      component: submitForm
+      name: 'Home',
+      component: Home
     },
     {
       path:'/display',
       name:'DisplayVideo',
-      component:DisplayVideo
+      component:DisplayVideo,
     }
     
   ]

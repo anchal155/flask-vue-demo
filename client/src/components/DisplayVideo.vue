@@ -9,18 +9,18 @@
   
   <script>
     import axios from 'axios';
-
+    
     export default {
         name: 'DisplayVideo',
+        props:['file'],
         data() {
             return {
                 videoUrl: '',
                 subtitlesContent: null,
-                subtitleFile: '',
             }
         },
         mounted() {
-            const getSubtitles = axios.get('http://localhost:5001/api/getSubtitles/subtitle.vtt');
+            const getSubtitles = axios.get('http://localhost:5001/api/getSubtitles/' + 'subtitle.vtt');
             const getVideo = axios.get('http://localhost:5001/api/getVideo/welcome.mp4');
 
             Promise.all([getSubtitles, getVideo])
@@ -31,11 +31,11 @@
                 // getting the file content and the url path for video display
                 this.subtitlesContent = subtitlesResponse.data;
                 this.videoUrl = videoResponse.config.url;
-                
-                this.saveSubtitleToAssets(this.subtitlesContent)
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
+
+                this.saveSubtitleToAssets(this.subtitlesContent);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
             });
             
         },
@@ -79,8 +79,11 @@
     }
   </script>
   <style scoped>
-  video {
-    width: 100%;
-  }
+    video {
+        width: 100%;
+    }
+    .top-50{
+        margin-top: 50px;
+    }
   </style>
   
