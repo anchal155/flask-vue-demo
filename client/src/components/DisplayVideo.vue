@@ -17,27 +17,31 @@
             return {
                 videoUrl: '',
                 subtitlesContent: null,
+                videoFileName: '',
+                SubtitleFileName: ''
             }
         },
-        mounted() {
-            const getSubtitles = axios.get('http://localhost:5001/api/getSubtitles/' + 'subtitle.vtt');
-            const getVideo = axios.get('http://localhost:5001/api/getVideo/welcome.mp4');
+        async mounted() {
 
-            Promise.all([getSubtitles, getVideo])
-            .then(responses => {
-                const subtitlesResponse = responses[0];
-                const videoResponse = responses[1];
-                
-                // getting the file content and the url path for video display
-                this.subtitlesContent = subtitlesResponse.data;
-                this.videoUrl = videoResponse.config.url;
+            const  getfileNames = axios.get('http://localhost:5001/api/getFilename');
+            const response = await getfileNames;
 
-                this.saveSubtitleToAssets(this.subtitlesContent);
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
+            var data = response.data.files;
+            this.videoFileName = data["videoFile"];
+            this.SubtitleFileName = data["subtitleFile"];
             
+            const getSubtitles = axios.get('http://localhost:5001/api/getSubtitles/' + this.SubtitleFileName);
+            const getVideo = axios.get('http://localhost:5001/api/getVideo/' + this.videoFileName);
+
+            const responses = await Promise.all([getSubtitles, getVideo]);
+            const subtitlesResponse = responses[0];
+            const videoResponse = responses[1];
+
+            // getting the file content and the url path for video display
+            this.subtitlesContent = subtitlesResponse.data;
+            this.videoUrl = videoResponse.config.url;
+
+            this.saveSubtitleToAssets(this.subtitlesContent);
         },
         methods: {
             saveSubtitleToAssets(subtitles) {

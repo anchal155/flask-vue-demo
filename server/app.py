@@ -1,8 +1,7 @@
 from flask import Flask, request, send_file, jsonify, url_for
 import os
 from flask_cors import CORS
-import base64
-from webvtt import WebVTT
+
 
 app = Flask(__name__)
 #CORS(app)  # Enable CORS for all routes
@@ -50,6 +49,22 @@ def upload_files():
         
         # Read the contents of the subtitle file
         return 'the files are uploaded successfully'
+    
+# Get the filename Dynamically saved in upload folder
+@app.route('/api/getFilename', methods=['GET'])
+def get_filename():
+    folder_path =  os.path.join(current_directory, 'uploads')
+    
+    # Get the list of files in the folder
+    files = os.listdir(folder_path)
+    data= {}
+
+    if len(files) > 0:
+        data["videoFile"]= files[1]
+        data["subtitleFile"] = files[0]
+        return {'files': data}, 200
+    
+    return {'error': 'No video file found'}, 404
     
 #Get the Video file
 @app.route('/api/getVideo/<filename>', methods = ['GET'])
