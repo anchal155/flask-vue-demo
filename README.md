@@ -19,6 +19,4 @@ the app will be running on port 5173
 
 For demo purpose I have added a static video which is there in upload folder you can just try to copy on your local at some other place and upload the same file by deleteing from the server /uploads folder
 
-also the static subtitle file name should be same like subtitle.vtt which will be saved in /uploads folder and in client it is getting save in /assets folder via API call
-
 Once done the app is ready
